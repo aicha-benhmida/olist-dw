@@ -5,7 +5,7 @@ orders=Path("data/raw/olist_orders_dataset.csv")
 order_items=Path("data/raw/olist_order_items_dataset.csv")
 order_reviews=Path("data/raw/olist_order_reviews_dataset.csv")
 df_customers=pd.read_csv(customers,usecols=["customer_id","customer_unique_id","customer_city","customer_state"])
-df_orders=pd.read_csv(orders,usecols=["order_id","order_delivered_customer_date","order_status","order_estimated_delivery_date","order_approved_at","customer_id"])
+df_orders=pd.read_csv(orders,usecols=["order_id","order_delivered_customer_date","order_status","order_estimated_delivery_date","order_approved_at","order_purchase_timestamp","customer_id"])
 df_order_items=pd.read_csv(order_items,usecols=["order_id","price"])
 df_order_reviews=pd.read_csv(order_reviews,usecols=["order_id","review_score"])
 """
@@ -55,4 +55,21 @@ print(df_orders["is_on_time"].mean())"""
 
 df_customers=df_customers[ df_customers["customer_id"] .isin( df_orders["customer_id"] ) ]
 print(df_customers.shape)
-print(df_customers.duplicated().sum())
+print(df_customers["customer_id"].duplicated().sum())
+
+df_orders["order_purchase_timestamp"] = pd.to_datetime(df_orders["order_purchase_timestamp"])
+df_orders["date_key"] = df_orders["order_purchase_timestamp"].dt.strftime("%Y%m%d").astype(int)
+
+print(df_orders[["order_purchase_timestamp", "date_key"]].head())
+
+
+first_year = df_orders["order_purchase_timestamp"].dt.year.min()
+last_year = df_orders["order_purchase_timestamp"].dt.year.max()
+
+dim_date = pd.DataFrame({"full_date": pd.date_range(start=f"{first_year}-01-01", end=f"{last_year}-12-31")})
+dim_date["year"] = dim_date["full_date"].dt.year
+dim_date["date_key"] = dim_date["full_date"].dt.strftime("%Y%m%d").astype(int)
+
+print(dim_date["date_key"].duplicated().sum())
+print((~df_orders["date_key"].isin(dim_date["date_key"])).sum())
+print(dim_date.shape)

@@ -57,4 +57,4 @@ Python (pandas, SQLAlchemy, python-dotenv), PostgreSQL, Power BI Desktop
 
 ## Author
 
-Ash, <ISIMM>, <https://www.linkedin.com/in/aicha-benhmida>
+Aicha, ISIMM, https://www.linkedin.com/in/aicha-benhmida
